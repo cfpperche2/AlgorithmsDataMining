@@ -1,5 +1,14 @@
-%% KMeans
+%% Classify using the K Means
 function [cluster_assignments, cluster_means, train_features] = Kmeans(train_features, train_targets, K, threshold)
+% Inputs:
+% 	train_features - Train features
+%	train_targets - Train targets
+%	K - Number of clusters
+%	threshold - Percentage of incorrectly assigned samples at a clusters
+%
+% Outputs
+%	test_targets - Test targets
+
     uc = unique(train_targets);
     nc = length(uc);
     [nf na] = size(train_features);

@@ -1,10 +1,11 @@
-%% Classify using Quinlan's C4.5 algorithm
-function test_targets = C45(train_features, train_targets, test_features, inc_node)
+%% Classify using classification and regression trees
+function test_targets = CART(train_features, train_targets, test_features, inc_node, splitting_rule)
 % Inputs:
 % 	train_features - Train features
-%	train_targets	 - Train targets
+%	train_targets - Train targets
 %   test_features - Test features
 %	inc_node - Percentage of incorrectly assigned samples at a node
+%	splitting_rule - Impurity type can be: Entropy, Variance (or Gini), or Missclassification
 %
 % Outputs
 %	test_targets - Test targets
@@ -131,4 +132,30 @@ dims = 1:size(features,1);
    targets = targets + use_tree(features(dims, :), in, tree.child(1), discrete_dim(dims), Uc);
    in = indices(find(features(dim, indices) >  tree.split_loc));
    targets = targets + use_tree(features(dims, :), in, tree.child(2), discrete_dim(dims), Uc);
+end
+
+function delta = splitting_rules(split_point, features, targets, dim, split_type)
+    %Calculate the difference in impurity for the CART algorithm
+    Uc = unique(targets);
+    for i = 1:length(Uc),
+       in = find(targets == Uc(i));
+       Pr(i) = length(find(features(dim, in) >   split_point))/length(in);
+       Pl(i) = length(find(features(dim, in) <=  split_point))/length(in);
+    end
+
+    switch split_type,
+    case 'Entropy'
+       Er = sum(-Pr.*log(Pr+eps)/log(2));
+       El = sum(-Pl.*log(Pl+eps)/log(2));
+    case {'Variance', 'Gini'}
+        Er = 1 - sum(Pr.^2);
+        El = 1 - sum(Pl.^2);
+    case 'Missclassification'
+       Er = 1 - max(Pr);
+       El = 1 - max(Pl);
+    otherwise
+       error('Possible splitting rules are: Entropy, Variance, Gini, or Missclassification')
+    end
+    P = length(find(features(dim, :) <= split_point)) / length(targets);
+    delta = -P*El - (1-P)*Er;
 end

@@ -1,4 +1,4 @@
-%% C4.5
+%% CART
 clc; close all; clear all;
 
 %% Load data sample and prepare
@@ -13,10 +13,10 @@ ds = shuffle_dataset(ds);
 %% Prepare test and training sets. 
 [train_dataset, test_dataset] = splitting_dataset(ds,0.7);
 
-%% Run C4.5
+%% Run CART
 [train_targets_i, train_targets_l]=grp2idx(train_dataset.(5)); % Change class name into ordinal index
 [test_targets_i, test_targets_l]=grp2idx(test_dataset.(5)); % Change class name into ordinal index
 
 tic();
-    predicted = C45(double(train_dataset(:,1:4)), train_targets_i, double(test_dataset(:,1:4)), 0);
+    predicted = CART(double(train_dataset(:,1:4)), train_targets_i, double(test_dataset(:,1:4)), 0);
 etime = toc();

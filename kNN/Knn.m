@@ -1,6 +1,14 @@
-%% K-Nearest Neighbor classification (KNN)
+%% Classify using the Nearest neighbor algorithm
+function [test_targets] = Knn (train_features, train_targets, test_features, K)
+% Inputs:
+% 	train_features - Train features
+%	train_targets - Train targets
+%   test_features - Test features
+%	K - Number of nearest neighbors
+%
+% Outputs
+%	test_targets - Test targets
 
-function [predicted_features] = Knn (train_features, train_targets, test_features, K)
     uc = unique(train_targets);
     nc = length(uc);
     [nf na] = size(train_features);
@@ -17,6 +25,6 @@ function [predicted_features] = Knn (train_features, train_targets, test_feature
         %% Testing the classifier
         best_fit = train_targets(ordered_index(1:K));
         [max_class best_class] = max(histc(best_fit, uc));
-        predicted_features(i) = best_class;
+        test_targets(i) = best_class;
     end
 end

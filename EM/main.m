@@ -7,7 +7,6 @@ attributes = {'SLength','SWidth','PLength','PWidth'};
 description = 'Fisher''s Iris Dataset';
 [ds, uc, nf] = build_dataset(meas,species,attributes,description);
 
-
 %% EM parameters
 % k is the number of clusters to use, you should experiment with this
 % number and MAKE SURE YOUR CODE WORKS FOR ANY VALUE OF K >= 1
@@ -17,9 +16,11 @@ theta = 0.01;
 %% Shuffle the dataset
 ds = shuffle_dataset(ds);
 
-%% Run Naive Bayes
+%% Run EM
+[train_targets_i, train_targets_l]=grp2idx(ds.(5)); % Change class name into ordinal index
+
 tic();
-[f m_shuffled labels_shuffled m_predicted labels_predicted] = EM(ds, length(uc),length(attributes), uc, K, theta);
+[f m_shuffled labels_shuffled m_predicted labels_predicted] = EM(double(ds(:,1:4)), train_targets_i, K, theta);
 etime = toc();
 
 %% Checking error rate

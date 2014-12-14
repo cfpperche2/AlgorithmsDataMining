@@ -1,4 +1,13 @@
-function predicted_features = naive_bayes (train_features, train_targets, test_features)
+%% Classify using the Naive Bayes
+function test_targets = naive_bayes (train_features, train_targets, test_features)
+% Inputs:
+% 	train_features - Train features
+%	train_targets - Train targets
+%   test_features - Test features
+%
+% Outputs
+%	test_targets - Test targets
+    
     uc = unique(train_targets);
     nc = length(uc);
     [nf na] = size(train_features);
@@ -28,7 +37,7 @@ function predicted_features = naive_bayes (train_features, train_targets, test_f
  
         %Assign the class with the highest posterior value
         [max_prob, class] = max(posterior);
-        predicted_features(i) = class;
+        test_targets(i) = class;
     end
-    predicted_features = predicted_features';
+    test_targets = test_targets';
 end
