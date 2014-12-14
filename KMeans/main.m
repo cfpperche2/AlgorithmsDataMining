@@ -7,7 +7,6 @@ attributes = {'SLength','SWidth','PLength','PWidth'};
 description = 'Fisher''s Iris Dataset';
 [ds, uc, nf] = build_dataset(meas,species,attributes,description);
 
-
 %% Kmeans parameters
 K = 3; % The number of clusters
 threshold = 0.01; % Stop criteria
@@ -16,8 +15,10 @@ threshold = 0.01; % Stop criteria
 ds = shuffle_dataset(ds);
 
 %% Run Kmeans
+[train_targets_i, train_targets_l]=grp2idx(ds.(5)); % Change class name into ordinal index
+
 tic();
-[cluster_assignments, cluster_means, f] = Kmeans(ds, length(uc),length(attributes), uc, 3, 0.01);
+    [cluster_assignments, cluster_means, f] = Kmeans(double(ds(:,1:4)), train_targets_i, K, threshold);
 etime = toc();
 
 %% Checking error rate
@@ -35,7 +36,6 @@ fprintf('Error rate is %0.5f.\n', error_rate);
 
 %% Plot
 meas = normr(meas);
-
 figure(1)
 subplot(2,2,1) % first subplot
 gscatter(meas(:,1), meas(:,2), species,'rgb','osd');

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SearchResults:searchresults xsi:schemaLocation="http://www.zillow.com/static/xsd/SearchResults.xsd /vstatic/44639e3b2a3f613bc4d97c375bb2e7dd/static/xsd/SearchResults.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SearchResults="http://www.zillow.com/static/xsd/SearchResults.xsd">
+
+    <request>
+        <address>6 Washington</address>
+        <citystatezip>Cambridge,MA</citystatezip>
+    </request>
+    
+    <message>
+        <text>Request successfully processed</text>
+        <code>0</code>
+		
+    </message>
+
+    
+    <response>
+		<results>
+			
+			<result>
+	            	<zpid>56428930</zpid>
+	<links>
+		<homedetails>http://www.zillow.com/HomeDetails.htm?city=Cambridge&amp;state=MA&amp;zprop=56428930&amp;s_cid=Pa-Cp-X1-CLz1cp7ufutd50_o1a5e&amp;partner=X1-CLz1cp7ufutd50_o1a5e</homedetails>
+		<graphsanddata>http://www.zillow.com/Charts.htm?chartDuration=5years&amp;zpid=56428930&amp;cbt=2305053747846125927%7E2%7EFGOrStjgW-x1JexbsG5Tuz-Tx7aHcmfAgX1WBPPmnTVsECU_pY6HxQ**&amp;s_cid=Pa-Cp-X1-CLz1cp7ufutd50_o1a5e&amp;partner=X1-CLz1cp7ufutd50_o1a5e</graphsanddata>
+		<mapthishome>http://www.zillow.com/search/RealEstateSearch.htm?zpid=56428930#src=url&amp;s_cid=Pa-Cp-X1-CLz1cp7ufutd50_o1a5e&amp;partner=X1-CLz1cp7ufutd50_o1a5e</mapthishome>
+		<myestimator>http://www.zillow.com/myestimator/Edit.htm?zprop=56428930&amp;s_cid=Pa-Cp-X1-CLz1cp7ufutd50_o1a5e&amp;partner=X1-CLz1cp7ufutd50_o1a5e</myestimator>
+		<myzestimator deprecated="true">http://www.zillow.com/myestimator/Edit.htm?zprop=56428930&amp;s_cid=Pa-Cp-X1-CLz1cp7ufutd50_o1a5e&amp;partner=X1-CLz1cp7ufutd50_o1a5e</myzestimator>
+	</links>
+	<address>
+		<street>6 Fort Washington Pl</street>
+		<zipcode>02139</zipcode>
+		<city>Cambridge</city>
+		<state>MA</state>
+		<latitude>42.356591</latitude>
+		<longitude>-71.107523</longitude>
+	</address>
+	
+		<FIPScounty></FIPScounty>
+	    <useCode>SingleFamily</useCode>
+	
+	
+		<taxAssessmentYear>2007</taxAssessmentYear>
+		<taxAssessment>446300.0</taxAssessment>
+		<yearBuilt>1982</yearBuilt>
+		<lotSizeSqFt>1104</lotSizeSqFt>
+		<finishedSqFt>1161</finishedSqFt>
+		<bathrooms>1.5</bathrooms>
+		<bedrooms>2</bedrooms>
+		
+		<lastSoldDate>12/16/2004</lastSoldDate>
+		<lastSoldPrice currency="USD">505000</lastSoldPrice>
+	
+	<zestimate>
+		<amount currency="USD">493500</amount>
+		<last-updated>05/23/2008</last-updated>
+		
+		
+			<oneWeekChange deprecated="true"></oneWeekChange>
+		
+		
+			<valueChange currency="USD" duration="30">-12000</valueChange>
+		
+		
+		<valuationRange>
+			<low currency="USD">439215</low>
+			<high currency="USD">547785</high>
+		</valuationRange>
+		<percentile></percentile>
+	</zestimate>
+    		</result>
+    		
+			<result>
+	            	<zpid>56437986</zpid>
+	<links>
+		<homedetails>http://www.zillow.com/HomeDetails.htm?city=Cambridge&amp;state=MA&amp;zprop=56437986&amp;s_cid=Pa-Cp-X1-CLz1cp7ufutd50_o1a5e&amp;partner=X1-CLz1cp7ufutd50_o1a5e</homedetails>
+		<graphsanddata>http://www.zillow.com/Charts.htm?chartDuration=5years&amp;zpid=56437986&amp;cbt=2305053747846125927%7E2%7EFGOrStjgW-x1JexbsG5Tuz-Tx7aHcmfAgX1WBPPmnTVsECU_pY6HxQ**&amp;s_cid=Pa-Cp-X1-CLz1cp7ufutd50_o1a5e&amp;partner=X1-CLz1cp7ufutd50_o1a5e</graphsanddata>
+		<mapthishome>http://www.zillow.com/search/RealEstateSearch.htm?zpid=56437986#src=url&amp;s_cid=Pa-Cp-X1-CLz1cp7ufutd50_o1a5e&amp;partner=X1-CLz1cp7ufutd50_o1a5e</mapthishome>
+		<myestimator>http://www.zillow.com/myestimator/Edit.htm?zprop=56437986&amp;s_cid=Pa-Cp-X1-CLz1cp7ufutd50_o1a5e&amp;partner=X1-CLz1cp7ufutd50_o1a5e</myestimator>
+		<myzestimator deprecated="true">http://www.zillow.com/myestimator/Edit.htm?zprop=56437986&amp;s_cid=Pa-Cp-X1-CLz1cp7ufutd50_o1a5e&amp;partner=X1-CLz1cp7ufutd50_o1a5e</myzestimator>
+	</links>
+	<address>
+		<street>6 Washington Ave APT 6</street>
+		<zipcode>02140</zipcode>
+		<city>Cambridge</city>
+		<state>MA</state>
+		<latitude>42.384934</latitude>
+		<longitude>-71.122804</longitude>
+	</address>
+	
+		<FIPScounty></FIPScounty>
+	    <useCode>Condominium</useCode>
+	
+	
+		<taxAssessmentYear>2007</taxAssessmentYear>
+		<taxAssessment>289400.0</taxAssessment>
+		<yearBuilt>1880</yearBuilt>
+		
+		<finishedSqFt>607</finishedSqFt>
+		<bathrooms>1.0</bathrooms>
+		<bedrooms>1</bedrooms>
+		
+		<lastSoldDate>08/16/2004</lastSoldDate>
+		<lastSoldPrice currency="USD">314400</lastSoldPrice>
+	
+	<zestimate>
+		<amount currency="USD">328000</amount>
+		<last-updated>05/23/2008</last-updated>
+		
+		
+			<oneWeekChange deprecated="true"></oneWeekChange>
+		
+		
+			<valueChange currency="USD" duration="30">-6000</valueChange>
+		
+		
+		<valuationRange>
+			<low currency="USD">301760</low>
+			<high currency="USD">360800</high>
+		</valuationRange>
+		<percentile></percentile>
+	</zestimate>
+    		</result>
+    		
+		</results>	    	
+    </response>
+
+</SearchResults:searchresults>
+<!-- H:112  T:133ms  S:2388  R:Mon May 26 15:40:08 PDT 2008  B:3.0.46576-comp_rel_a -->
