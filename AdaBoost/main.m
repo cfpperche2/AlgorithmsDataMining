@@ -1,52 +1,105 @@
 %% Adaptative Boosting
-clear all; close all; clc; 
+clear all; close all; clc;
 
-%% Load data sample and prepare
-load fisheriris
-attributes = {'SLength','SWidth','PLength','PWidth'};
-description = 'Fisher''s Iris Dataset';
-[ds, uc, nf] = build_dataset(meas,species,attributes,description);
+%% Make training data of two classes "red" and "blue"
+% with 2 features for each sample (the position  x and y).
+angle = rand(200,1)*2*pi; 
+l = rand(200,1)*40+30; 
+blue = [sin(angle).*l cos(angle).*l];
 
-%% Shuffle the dataset
-ds = shuffle_dataset(ds);
+angle = rand(200,1)*2*pi; 
+l = rand(200,1)*40;    
+red = [sin(angle).*l cos(angle).*l];
 
-%% Prepare test and training sets. 
-[train_features, test_features] = splitting_dataset(ds,0.7);
+% All the training data
+datafeatures = [blue;red];
+dataclass(1:200) = -1; 
+dataclass(201:400) = 1;
 
-%% Run Naive Bayes
+% Show the data
+figure 
+subplot(2,2,1)
+hold on;
+grid on
+plot(blue(:,1),blue(:,2),'bo'); 
+plot(red(:,1),red(:,2),'ro');
+title('Training Data');
+
+%% Use Adaboost to make a classifier
 tic();
-predicted_features = adaboost(train_features, test_features, length(uc),length(attributes), uc);
+    [classestimate, model] = adaboost(datafeatures, dataclass, 50);
 etime = toc();
-bad_predicted = [];
-%% Checking error rate
-for i=1:size(test_features,1)
-    if ~strcmp(cellstr(predicted_features(i)),cellstr(test_features(i,5)))
-        bad_predicted = [bad_predicted, i];
-    end
+
+%% Training results
+% Show results
+
+bad_predicted = (classestimate(:)~=dataclass(:));
+error_rate = length(find(bad_predicted==1)) /size(dataclass',1);
+
+blue = datafeatures(classestimate==-1,:); 
+red = datafeatures(classestimate==1,:);
+I = zeros(161,161);
+for i=1:length(model)
+  if(model(i).dimension==1)
+      if(model(i).direction==1)
+          rec = [-80 -80 80+model(i).threshold 160];
+      else
+          rec = [model(i).threshold -80 80-model(i).threshold 160 ];
+      end
+  else
+      if(model(i).direction==1)
+          rec = [-80 -80 160 80+model(i).threshold];
+      else
+          rec = [-80 model(i).threshold 160 80-model(i).threshold];
+      end
+  end
+  rec = round(rec);
+  y = rec(1)+81:rec(1)+81+rec(3); 
+  x = rec(2)+81:rec(2)+81+rec(4);
+  I = I-model(i).alpha; 
+  I(x,y) = I(x,y)+2*model(i).alpha;    
+end
+subplot(2,2,2)
+hold on
+grid on
+plot(blue(:,1),blue(:,2),'bo');
+plot(red(:,1),red(:,2),'ro');
+plot(datafeatures((bad_predicted==1),1),datafeatures((bad_predicted==1),2),'kx');
+
+title('Training Data classified with adaboost model');
+
+% Show the error verus number of weak classifiers
+error = zeros(1,length(model)); 
+for i=1:length(model)
+    error(i) = model(i).error; 
 end
 
-error_rate = length(bad_predicted) /size(test_features,1);
-
+subplot(2,2,3) 
+plot(error); 
+grid on
+title('Classification error versus number of weak classifiers');
 
 %% Print outputs
-fprintf('Naive Bayes for normal distribution\n');
+fprintf('Adaboost\n');
 fprintf('Elapsed time is %0.5f seconds.\n', etime);
 fprintf('Error rate is %0.5f.\n', error_rate);
-%% Plot
-figure(1)
-subplot(1,2,1) % first subplot
-gscatter(meas(:,1), meas(:,2), species,'rgb','osd');
-hold on;
-%plot(double(test_features(bad_predicted,1)),double(test_features(bad_predicted,2)),'kx');
-hold off;
-xlabel('Sepal length');
-ylabel('Sepal width');
-title 'Fisher''s Iris Data';
-subplot(1,2,2) % second subplot
-gscatter(meas(:,3), meas(:,4), species,'rgb','osd');
-hold on;
-%plot(double(test_features(bad_predicted,3)),double(test_features(bad_predicted,4)),'kx');
-hold off;
-xlabel('Petal length');
-ylabel('Petal width');
-title 'Fisher''s Iris Data';
+
+%% Make some test data
+angle = rand(200,1)*2*pi; 
+l = rand(200,1)*70; 
+testdata = [sin(angle).*l cos(angle).*l];
+
+% Classify the testdata with the trained model
+testclass = adaboost_eval(testdata, model);
+
+% Show result
+blue = testdata(testclass==-1,:); 
+red = testdata(testclass==1,:);
+
+% Show the data
+subplot(2,2,4)
+hold on
+grid on
+plot(blue(:,1),blue(:,2),'bo');
+plot(red(:,1),red(:,2),'ro');
+title('Test Data classified with adaboost model');

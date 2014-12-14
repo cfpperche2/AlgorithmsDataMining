@@ -1,4 +1,4 @@
-function y = ApplyClassThreshold(h, x)
+function y = weak_learner(h, x)
 % Draw a line in one dimension (like horizontal or vertical)
 % and classify everything below the line to one of the 2 classes
 % and everything above the line to the other class.

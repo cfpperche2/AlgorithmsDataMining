@@ -1,11 +1,11 @@
 %% Classify using classification and regression trees
-function test_targets = CART(train_features, train_targets, test_features, inc_node, splitting_rule)
+function test_targets = CART(train_features, train_targets, test_features, inc_node, split_type)
 % Inputs:
 % 	train_features - Train features
 %	train_targets - Train targets
 %   test_features - Test features
 %	inc_node - Percentage of incorrectly assigned samples at a node
-%	splitting_rule - Impurity type can be: Entropy, Variance (or Gini), or Missclassification
+%	split_type - Impurity type can be: Entropy, Variance (or Gini), or Missclassification
 %
 % Outputs
 %	test_targets - Test targets
@@ -21,140 +21,113 @@ test_targets = train_features;
 end
 
 %% Helper to build a tree recursively
-function tree = make_tree(features, targets, inc_node, base)
-[Ni, L] = size(features);
-Uc = unique(targets);
-tree.dim = 0;
-tree.split_loc = inf;
-
-%When to stop: If the dimension is one or the number of examples is small
-if ((inc_node > L) | (L == 1) | (length(Uc) == 1))
-   H = hist(targets, length(Uc));
-   [m, largest] = max(H);
-   tree.Nf = [];
-   tree.split_loc = [];
-   tree.child = Uc(largest);
-   return
-end
-
-%Compute the node's information
-for i = 1:length(Uc),
-    Pnode(i) = length(find(targets == Uc(i))) / L;
-end
-Inode = -sum(Pnode.*log(Pnode)/log(2));
-
-%For each dimension, compute the gain ratio impurity
-%This is done separately for discrete and continuous features
-delta_Ib = zeros(1, Ni);
-split_loc = ones(1, Ni)*inf;
-
-for i = 1:Ni,
-    data = features(i,:);
-    Ud = unique(data);
-    Nbins = length(Ud);
-    
-    %This is a continuous pattern
-    P = zeros(length(Uc), 2);
-    %Sort the patterns
-    [sorted_data, indices] = sort(data);
-    sorted_targets = targets(indices);
-    %Calculate the information for each possible split
-    I	= zeros(1, L-1);
-    for j = 1:L-1,
-        %for k =1:length(Uc),
-        %    P(k,1) = sum(sorted_targets(1:j)        == Uc(k));
-        %    P(k,2) = sum(sorted_targets(j+1:end)    == Uc(k));
-        %end
-        P(:,1) = hist(sorted_targets(1:j), Uc);
-        P(:,2) = hist(sorted_targets(j+1:end), Uc);
-        Ps = sum(P)/L;
-        P = P/L;
-        Pk = sum(P);            
-        P1 = repmat(Pk, length(Uc), 1);
-        P1 = P1 + eps*(P1==0);
-        info = sum(-P.*log(eps+P./P1)/log(2));
-        I(j) = Inode - sum(info.*Ps);
+function tree = make_tree(features, targets, Dlength, split_type, inc_node, region)
+    if (length(unique(targets)) == 1)
+        %There is only one type of targets, and this generates a warning, so deal with it separately
+        tree.right = [];
+        tree.left = [];
+        tree.Raction = targets(1);
+        tree.Laction = targets(1);
+        return
     end
-    [delta_Ib(i), s] = max(I);
-    split_loc(i) = sorted_data(s);  
-end
+    
+    [Ni, M] = size(features);
+    Nt = unique(targets);
+    N = hist(targets, Nt);
 
-%Find the dimension minimizing delta_Ib
-[m, dim] = max(delta_Ib);
-dims = 1:Ni;
-tree.dim = dim;
-%Split along the 'dim' dimension
-Nf = unique(features(dim,:));
-Nbins = length(Nf);
-tree.Nf = Nf;
-tree.split_loc = split_loc(dim);
-%If only one value remains for this pattern, one cannot split it.
-if (Nbins == 1)
-    H = hist(targets, length(Uc));
-    [m, largest] = max(H);
-    tree.Nf = [];
-    tree.split_loc = [];
-    tree.child = Uc(largest);
-    return
-end
-%Continuous pattern
-indices1 = find(features(dim,:) <= split_loc(dim));
-indices2 = find(features(dim,:) > split_loc(dim));
-if ~(isempty(indices1) | isempty(indices2))
-    tree.child(1) = make_tree(features(dims, indices1), targets(indices1), inc_node, base+1);
-    tree.child(2) = make_tree(features(dims, indices2), targets(indices2), inc_node, base+1);
-else
-    H = hist(targets, length(Uc));
-    [m, largest] = max(H);
-    tree.child = Uc(largest);
-    tree.dim = 0;
-end
+    if ((sum(N < Dlength*inc_node) == length(Nt) - 1) | (M == 1)) 
+        %No further splitting is neccessary
+        tree.right = [];
+        tree.left = [];
+        if (length(Nt) ~= 1)
+            MLlabel = find(N == max(N));
+        else
+            MLlabel = 1;
+        end
+        tree.Raction = Nt(MLlabel);
+        tree.Laction = Nt(MLlabel);
+    else
+        %Split the node according to the splitting criterion  
+        deltaI = zeros(1,Ni);
+        split_point = zeros(1,Ni);
+        op = optimset('Display', 'off');   
+        for i = 1:Ni
+            split_point(i) = fminbnd('CARTfunctions', region(i*2-1), region(i*2), op, features, targets, i, split_type);
+            I(i) = feval('CARTfunctions', split_point(i), features, targets, i, split_type);
+        end
+
+        [m, dim] = min(I);
+        loc = split_point(dim);
+
+        %So, the split is to be on dimention 'dim' at location 'loc'
+        indices = 1:M;
+        tree.Raction = ['features(' num2str(dim) ',indices) >  ' num2str(loc)];
+        tree.Laction = ['features(' num2str(dim) ',indices) <= ' num2str(loc)];
+        in_right = find(eval(tree.Raction));
+        in_left = find(eval(tree.Laction));
+
+        if isempty(in_right) | isempty(in_left)
+            %No possible split found
+            tree.right = [];
+            tree.left = [];
+            if (length(Nt) ~= 1)
+                MLlabel = find(N == max(N));
+            else
+                MLlabel = 1;
+            end
+        tree.Raction = Nt(MLlabel);
+        tree.Laction = Nt(MLlabel);
+        else
+            %...It's possible to build new nodes
+            tree.right = make_tree(features(:,in_right), targets(in_right), Dlength, split_type, inc_node, region);
+            tree.left  = make_tree(features(:,in_left), targets(in_left), Dlength, split_type, inc_node, region);      
+        end
+    end
 end
 
 %% Classify recursively using a tree
-function targets = use_tree(features, indices, tree, discrete_dim, Uc)
-targets = zeros(1, size(features,2));
+function targets = use_tree(features, indices, tree)
+%Classify recursively using a tree
 
-if (tree.dim == 0)
-   %Reached the end of the tree
-   targets(indices) = tree.child;
-   return
-end
-        
-%This is not the last level of the tree, so:
-%First, find the dimension we are to work on
-dim = tree.dim;
-dims = 1:size(features,1);
+    if isnumeric(tree.Raction)
+        %Reached an end node
+        targets = zeros(1,size(features,2));
+        targets(indices) = tree.Raction(1);
+    else
+        %Reached a branching, so:
+        %Find who goes where
+        in_right = indices(find(eval(tree.Raction)));
+        in_left = indices(find(eval(tree.Laction)));
 
-%And classify according to it
-   %Continuous feature
-   in = indices(find(features(dim, indices) <= tree.split_loc));
-   targets = targets + use_tree(features(dims, :), in, tree.child(1), discrete_dim(dims), Uc);
-   in = indices(find(features(dim, indices) >  tree.split_loc));
-   targets = targets + use_tree(features(dims, :), in, tree.child(2), discrete_dim(dims), Uc);
+        Ltargets = use_tree(features, in_left, tree.left);
+        Rtargets = use_tree(features, in_right, tree.right);
+
+        targets = Ltargets + Rtargets;
+    end
 end
 
+%% Calculate the difference in impurity for the CART algorithm
 function delta = splitting_rules(split_point, features, targets, dim, split_type)
     %Calculate the difference in impurity for the CART algorithm
     Uc = unique(targets);
     for i = 1:length(Uc),
-       in = find(targets == Uc(i));
-       Pr(i) = length(find(features(dim, in) >   split_point))/length(in);
-       Pl(i) = length(find(features(dim, in) <=  split_point))/length(in);
+        in = find(targets == Uc(i));
+        Pr(i) = length(find(features(dim, in) >   split_point))/length(in);
+        Pl(i) = length(find(features(dim, in) <=  split_point))/length(in);
     end
 
     switch split_type,
-    case 'Entropy'
-       Er = sum(-Pr.*log(Pr+eps)/log(2));
-       El = sum(-Pl.*log(Pl+eps)/log(2));
-    case {'Variance', 'Gini'}
-        Er = 1 - sum(Pr.^2);
-        El = 1 - sum(Pl.^2);
-    case 'Missclassification'
-       Er = 1 - max(Pr);
-       El = 1 - max(Pl);
-    otherwise
-       error('Possible splitting rules are: Entropy, Variance, Gini, or Missclassification')
+        case 'Entropy'
+            Er = sum(-Pr.*log(Pr+eps)/log(2));
+            El = sum(-Pl.*log(Pl+eps)/log(2));
+        case {'Variance', 'Gini'}
+            Er = 1 - sum(Pr.^2);
+            El = 1 - sum(Pl.^2);
+        case 'Missclassification'
+            Er = 1 - max(Pr);
+            El = 1 - max(Pl);
+        otherwise
+            error('Possible splitting rules are: Entropy, Variance, Gini, or Missclassification')
     end
     P = length(find(features(dim, :) <= split_point)) / length(targets);
     delta = -P*El - (1-P)*Er;

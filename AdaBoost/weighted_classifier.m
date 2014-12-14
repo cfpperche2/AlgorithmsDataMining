@@ -1,4 +1,4 @@
-function [estimateclass,err,h] = WeightedThresholdClassifier(datafeatures,dataclass,dataweight)
+function [estimateclass,err,h] = weighted_classifier(datafeatures,dataclass,dataweight)
 % This is an example of an "Weak Classifier", it caculates the optimal
 % threshold for all data feature dimensions.
 % It then selects the dimension and  threshold which divides the 
@@ -59,4 +59,5 @@ thr = thresholds(ind);
 h.dimension = dim; 
 h.threshold = thr; 
 h.direction = dir;
-estimateclass = ApplyClassThreshold(h,datafeatures);
+estimateclass = weak_learner(h,datafeatures);
+end
