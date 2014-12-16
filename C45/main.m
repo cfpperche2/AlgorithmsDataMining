@@ -18,5 +18,5 @@ ds = shuffle_dataset(ds);
 [test_targets_i, test_targets_l]=grp2idx(test_dataset.(5)); % Change class name into ordinal index
 
 tic();
-    predicted = C45(double(train_dataset(:,1:4)), train_targets_i, double(test_dataset(:,1:4)), 0);
+    predicted = C45(double(train_dataset(:,1:2)), train_targets_i, double(test_dataset(:,1:2)), 10);
 etime = toc();

@@ -1,4 +1,4 @@
-%% Support Vector Machine (SVM)
+%% SVM
 clear all; close all; clc; 
 
 %% Load data sample and prepare
@@ -11,42 +11,14 @@ description = 'Fisher''s Iris Dataset';
 ds = shuffle_dataset(ds);
 
 %% Prepare test and training sets. 
-[train_features, test_features] = splitting_dataset(ds,0.7);
+[train_dataset, test_dataset] = splitting_dataset(ds,0.7);
 
 %% Run Naive Bayes
+[train_targets_i, train_targets_l]=grp2idx(train_dataset.(5)); % Change class name into ordinal index
+[test_targets_i, test_targets_l]=grp2idx(test_dataset.(5)); % Change class name into ordinal index
+
+params = ['Gauss' , 2 , 'Quadprog' , 2];
+
 tic();
-predicted_features = svm(train_features, test_features, length(uc),length(attributes), uc);
+    predicted_features = svm(double(train_dataset(:,1:4)), train_targets_i, double(test_dataset(:,1:4)), params);
 etime = toc();
-bad_predicted = [];
-%% Checking error rate
-for i=1:size(test_features,1)
-    if ~strcmp(cellstr(predicted_features(i)),cellstr(test_features(i,5)))
-        bad_predicted = [bad_predicted, i];
-    end
-end
-
-error_rate = length(bad_predicted) /size(test_features,1);
-
-
-%% Print outputs
-fprintf('SVM for normal distribution\n');
-fprintf('Elapsed time is %0.5f seconds.\n', etime);
-fprintf('Error rate is %0.5f.\n', error_rate);
-%% Plot
-figure(1)
-subplot(1,2,1) % first subplot
-gscatter(meas(:,1), meas(:,2), species,'rgb','osd');
-hold on;
-plot(double(test_features(bad_predicted,1)),double(test_features(bad_predicted,2)),'kx');
-hold off;
-xlabel('Sepal length');
-ylabel('Sepal width');
-title 'Fisher''s Iris Data';
-subplot(1,2,2) % second subplot
-gscatter(meas(:,3), meas(:,4), species,'rgb','osd');
-hold on;
-plot(double(test_features(bad_predicted,3)),double(test_features(bad_predicted,4)),'kx');
-hold off;
-xlabel('Petal length');
-ylabel('Petal width');
-title 'Fisher''s Iris Data';

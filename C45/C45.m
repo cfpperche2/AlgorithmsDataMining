@@ -16,7 +16,7 @@ inc_node = inc_node*M/100;
 tree = make_tree(train_features, train_targets, inc_node, 0)
 %Classify test samples according to the tree
 %test_targets = use_tree(flatxy, 1:N^2, tree, discrete_dim, unique(train_targets));
-test_targets = train_features;
+test_targets = tree;
 end
 
 %% Helper to build a tree recursively
